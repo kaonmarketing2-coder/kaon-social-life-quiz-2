@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>가온그룹 신입공채 2기 — 비즈니스 매너 퀴즈 2탄</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF4D8D; --navy: #1A1A2E; --navy-mid: #23233A;
+    --gold: #FFD166; --green: #06D6A0; --red: #EF476F;
+    --white: #FFFFFF; --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--navy); color: var(--white);
+    min-height: 100vh; overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: ''; position: fixed; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,77,141,0.14) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: ''; position: fixed; bottom: -200px; left: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(6,214,160,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 720px; margin: 0 auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+
+  .header { text-align: center; padding: 56px 0 40px; }
+  .header-badge {
+    display: inline-block; background: var(--pink); color: white;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    padding: 6px 16px; border-radius: 100px; margin-bottom: 20px;
+  }
+  .header h1 { font-size: clamp(24px, 5vw, 40px); font-weight: 900; line-height: 1.3; margin-bottom: 12px; letter-spacing: -0.3px; }
+  .header h1 .accent { color: var(--pink); }
+  .header p { color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.75; }
+
+  .card {
+    background: var(--navy-mid); border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 36px; margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: linear-gradient(90deg, var(--pink), var(--gold));
+  }
+
+  #screen-name, #screen-quiz, #screen-result { display: none; }
+
+  .name-card { text-align: center; padding: 52px 36px; }
+  .name-card .emoji { font-size: 52px; margin-bottom: 18px; display: block; }
+  .name-card h2 { font-size: 21px; font-weight: 700; margin-bottom: 8px; }
+  .name-card p { color: rgba(255,255,255,0.48); font-size: 14px; margin-bottom: 32px; line-height: 1.75; }
+
+  .input-wrap { margin-bottom: 20px; }
+  .input-wrap input {
+    width: 100%; background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12); border-radius: 12px;
+    padding: 16px 20px; font-size: 17px;
+    font-family: 'Noto Sans KR', sans-serif; color: white;
+    outline: none; transition: border-color 0.2s; text-align: center;
+  }
+  .input-wrap input:focus { border-color: var(--pink); }
+  .input-wrap input::placeholder { color: rgba(255,255,255,0.28); }
+
+  .btn-primary {
+    display: block; width: 100%;
+    background: linear-gradient(135deg, var(--pink), #c2185b);
+    color: white; border: none; border-radius: 12px;
+    padding: 16px 40px; font-size: 16px; font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(255,77,141,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,77,141,0.42); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.07); color: white;
+    border: 1px solid rgba(255,255,255,0.13); border-radius: 12px;
+    padding: 12px 28px; font-size: 14px; font-weight: 500;
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.13); }
+
+  /* Progress */
+  .progress-bar-wrap { margin-bottom: 32px; }
+  .progress-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.42); margin-bottom: 10px; }
+  .progress-track { height: 4px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--gold)); border-radius: 100px; transition: width 0.4s ease; }
+
+  .quiz-q-num { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--pink); text-transform: uppercase; margin-bottom: 10px; }
+  .quiz-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; line-height: 1.5; }
+  .quiz-situation {
+    background: rgba(255,255,255,0.04); border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 14px 16px; margin-bottom: 24px;
+    font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.75;
+  }
+  .quiz-situation-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 6px; }
+
+  /* MCQ Options */
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 15px 18px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-family: 'Noto Sans KR', sans-serif; color: white; text-align: left; width: 100%;
+  }
+  .option-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,77,141,0.35); }
+  .option-btn.selected { background: rgba(255,77,141,0.13); border-color: var(--pink); }
+  .option-key {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: rgba(255,255,255,0.08); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.7);
+    transition: background 0.15s, color 0.15s;
+  }
+  .option-btn.selected .option-key { background: var(--pink); color: white; }
+  .option-text { font-size: 15px; font-weight: 500; line-height: 1.5; padding-top: 2px; }
+
+  .quiz-nav { display: flex; gap: 12px; }
+
+  /* Result */
+  .result-header { text-align: center; padding: 40px 0 32px; }
+  .result-emoji { font-size: 64px; display: block; margin-bottom: 16px; }
+  .result-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.38); margin-bottom: 8px; }
+  .result-title { font-size: 24px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.3px; }
+  .score-display {
+    display: inline-flex; align-items: baseline; gap: 4px;
+    background: rgba(255,77,141,0.12); border: 1px solid rgba(255,77,141,0.26);
+    border-radius: 100px; padding: 10px 28px; margin: 16px 0;
+  }
+  .score-num { font-size: 42px; font-weight: 900; color: var(--pink); }
+  .score-denom { font-size: 18px; color: rgba(255,255,255,0.38); }
+
+  .result-list { display: flex; flex-direction: column; gap: 16px; }
+  .result-item { padding: 24px 28px; }
+  .result-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .result-item-title { font-size: 15px; font-weight: 700; line-height: 1.5; flex: 1; }
+  .result-badge { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
+  .result-badge.correct { background: rgba(6,214,160,0.13); color: var(--green); border: 1px solid rgba(6,214,160,0.26); }
+  .result-badge.incorrect { background: rgba(239,71,111,0.13); color: var(--red); border: 1px solid rgba(239,71,111,0.26); }
+
+  .answer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 480px) { .answer-row { grid-template-columns: 1fr; } }
+  .answer-box { border-radius: 10px; padding: 12px 14px; }
+  .answer-box.user-ans { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); }
+  .answer-box.correct-ans { background: rgba(6,214,160,0.06); border: 1px solid rgba(6,214,160,0.17); }
+  .answer-box-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; color: rgba(255,255,255,0.36); }
+  .answer-box.correct-ans .answer-box-label { color: var(--green); }
+  .answer-box-text { font-size: 13px; font-weight: 500; line-height: 1.5; }
+
+  .result-explain {
+    background: rgba(255,209,102,0.05); border: 1px solid rgba(255,209,102,0.13);
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: rgba(255,255,255,0.58); line-height: 1.75;
+  }
+  .result-explain strong { color: var(--gold); }
+
+  /* Loading */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(26,26,46,0.82);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .loading-overlay.show { opacity: 1; pointer-events: all; }
+  .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,77,141,0.22); border-top-color: var(--pink); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--navy-mid); border: 1px solid rgba(255,255,255,0.1);
+    color: white; padding: 12px 24px; border-radius: 100px;
+    font-size: 14px; font-weight: 500; z-index: 998;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.32);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .mt-16 { margin-top: 16px; }
+  .text-center { text-align: center; }
+  @media (max-width: 600px) { .card { padding: 24px 18px; } .name-card { padding: 36px 18px; } }
+</style>
+</head>
+<body>
+<div class="loading-overlay" id="loading"><div class="spinner"></div></div>
+
+<!-- SCREEN 1: NAME -->
+<div id="screen-name">
+  <div class="container">
+    <div class="header">
+      <span class="header-badge">가온그룹 신입공채 2기</span>
+      <h1>비즈니스 <span class="accent">매너</span> 퀴즈 2탄</h1>
+      <p>악수, 명함, 전화, 이메일…<br>직장인의 기본 매너를 얼마나 알고 있나요?</p>
+    </div>
+    <div class="card name-card">
+      <span class="emoji">✨</span>
+      <h2>먼저 이름을 입력해 주세요</h2>
+      <p>제출 내역은 이름과 함께 기록됩니다.<br>정직하게 입력해 주세요 :)</p>
+      <div class="input-wrap">
+        <input type="text" id="input-name" placeholder="홍길동" maxlength="20" autocomplete="off">
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">퀴즈 시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: QUIZ -->
+<div id="screen-quiz">
+  <div class="container">
+    <div class="header" style="padding:40px 0 28px">
+      <span class="header-badge">가온그룹 신입공채 2기</span>
+      <h1>비즈니스 <span class="accent">매너</span> 퀴즈 2탄</h1>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span id="progress-label">문항 1 / 10</span>
+        <span id="user-label-top"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
+    </div>
+    <div class="card">
+      <div class="quiz-q-num" id="q-num">Question 01</div>
+      <div class="quiz-title" id="q-title"></div>
+      <div id="q-situation-wrap" style="display:none">
+        <div class="quiz-situation">
+          <div class="quiz-situation-label">📋 상황</div>
+          <div id="q-situation"></div>
+        </div>
+      </div>
+      <div class="options-list" id="options-list"></div>
+      <div class="quiz-nav">
+        <button class="btn-secondary" id="btn-prev" onclick="prevQ()">← 이전</button>
+        <button class="btn-primary" id="btn-next" onclick="nextQ()">다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: RESULT -->
+<div id="screen-result">
+  <div class="container">
+    <div class="result-header">
+      <span class="result-emoji" id="result-emoji">🎉</span>
+      <div class="result-name" id="result-name-display"></div>
+      <div class="result-title" id="result-title"></div>
+      <div class="score-display">
+        <span class="score-num" id="score-num">0</span>
+        <span class="score-denom">/ 10</span>
+      </div>
+    </div>
+    <div class="result-list" id="result-list"></div>
+    <div class="mt-16 text-center">
+      <button class="btn-secondary" onclick="restart()">↩ 다시 도전하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://mrdmywosqzaqukdfvbzv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yZG15d29zcXphcXVrZGZ2Ynp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NzIzNTksImV4cCI6MjA4OTU0ODM1OX0.D2PKVx9cqyAg-qIpKdtUX9z9AwdjDwNgo6Nsyy4vdNM';
+
+async function sbInsert(data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/quiz2_results`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+// ===== QUESTIONS =====
+const QUESTIONS = [
+  {
+    title: '명함은 누가 먼저 건네야 하나요?',
+    situation: '첫 비즈니스 미팅에서 상대방과 명함을 교환하려고 합니다.',
+    options: [
+      '직급이 높은 사람이 먼저 건넨다',
+      '직급이 낮은 사람 또는 방문객이 먼저 건넨다',
+      '나이가 많은 사람이 먼저 건넨다',
+      '동시에 교환하는 것이 가장 좋다'
+    ],
+    correct: 1,
+    explanation: '명함은 악수와 달리 직급이 낮은 사람이나 방문객이 먼저 건네는 것이 예의입니다. 단, 방문객의 직급이 상대방보다 높다면 먼저 건네는 것이 센스입니다.'
+  },
+  {
+    title: '비즈니스 악수, 누가 먼저 청해야 할까요?',
+    situation: '상급자와 처음 만나는 상황에서 악수를 해야 합니다.',
+    options: [
+      '먼저 도착한 사람이 청한다',
+      '직급이 낮은 사람이 먼저 청한다',
+      '직급이 높은 선임이 먼저 청하는 것이 일반적이다',
+      '방문객이 항상 먼저 청한다'
+    ],
+    correct: 2,
+    explanation: '악수는 직급이 높은 선임이 먼저 청했을 때 응하는 것이 일반적인 비즈니스 예절입니다. 반대로 명함은 아랫사람이 먼저 건네는 것이 예절입니다.'
+  },
+  {
+    title: '퇴근 시 상사에게 해서는 안 되는 인사는?',
+    situation: '오늘 업무가 끝나 상사보다 먼저 퇴근하려고 합니다.',
+    options: [
+      '"먼저 들어가겠습니다"',
+      '"내일 뵙겠습니다"',
+      '"수고하세요"',
+      '"즐거운 저녁 되십시오"'
+    ],
+    correct: 2,
+    explanation: '"수고하세요", "고생하세요"는 동료나 아랫사람에게 하는 말입니다. 상사에게는 "먼저 들어가겠습니다", "내일 뵙겠습니다", "즐거운 저녁 되십시오" 등의 표현이 적절합니다.'
+  },
+  {
+    title: '업무 전화, 몇 번 울리기 전에 받아야 하나요?',
+    situation: '자리에서 업무 중 전화벨이 울리고 있습니다.',
+    options: [
+      '1번 이내',
+      '2번 이내',
+      '3번 이내',
+      '5번 이내'
+    ],
+    correct: 2,
+    explanation: '전화는 3번 울리기 전에 받는 것이 원칙입니다. 3번 이상 울린 후 받았다면 "기다려주셔서 감사합니다"라는 인사를 먼저 건네는 것이 매너입니다.'
+  },
+  {
+    title: '받은 명함, 어떻게 취급해야 할까요?',
+    situation: '미팅 중 상대방으로부터 명함을 받았습니다.',
+    options: [
+      '받자마자 바로 지갑에 넣는다',
+      '테이블 위에 올려두었다가 자리가 끝날 때 보관한다',
+      '메모를 위해 명함에 바로 낙서한다',
+      '자리를 떠날 때 테이블에 두고 나간다'
+    ],
+    correct: 1,
+    explanation: '받은 명함은 즉시 지갑에 넣지 않고 테이블 위에 올려두었다가 자리가 마무리될 때 넣는 것이 예의입니다. 명함에 낙서하거나, 구기거나, 두고 나오는 행위는 절대 금물입니다.'
+  },
+  {
+    title: '올바른 악수 방법이 아닌 것은?',
+    situation: '비즈니스 미팅에서 상대방과 악수를 하게 되었습니다.',
+    options: [
+      '오른손으로 악수한다',
+      '눈을 마주치며 미소 짓는다',
+      '손끝만 살짝 잡는다',
+      '2~3번 정도 흔든다'
+    ],
+    correct: 2,
+    explanation: '손끝만 살짝 잡는 악수는 서양에서 "Dead Fish(죽은 물고기)"라고 불리며 결례입니다. 상대방에게 불쾌함을 줄 수 있습니다. 또한 악수 시 왼손을 주머니에 넣거나 뒷짐을 지는 행동도 금물입니다.'
+  },
+  {
+    title: '명함을 건넬 때 올바른 방법은?',
+    situation: '처음 만나는 거래처 담당자에게 명함을 전달하려 합니다.',
+    options: [
+      '한 손으로 명함을 건네도 무방하다',
+      '명함 정보가 잘 보이도록 상대방 방향으로 두 손으로 건넨다',
+      '명함을 테이블 위에 밀어서 전달한다',
+      '소속과 이름은 따로 말하지 않아도 된다'
+    ],
+    correct: 1,
+    explanation: '명함은 두 손으로 명함의 정보(소속, 이름 등)를 손으로 가리지 않고 상대방이 읽을 수 있도록 방향을 맞춰 건넵니다. 이때 "OO회사 OO팀 홍길동입니다"라고 소속과 이름을 함께 말하는 것이 예의입니다.'
+  },
+  {
+    title: '업무 전화를 받을 때 올바른 첫 응대는?',
+    situation: '외부 거래처로부터 전화가 걸려왔습니다.',
+    options: [
+      '"네, 말씀하세요"라고 간결하게 응대한다',
+      '"누구세요?"라고 상대방을 먼저 확인한다',
+      '"네, 안녕하세요. OO팀 OOO입니다"라고 소속과 이름을 밝힌다',
+      '용건을 먼저 물어본다'
+    ],
+    correct: 2,
+    explanation: '전화를 받을 때는 사명과 소속 부서, 자신의 이름을 순서대로 밝히는 것이 원칙입니다. 자신을 밝히지 않고 다짜고짜 용건부터 이야기하거나 상대방을 먼저 묻는 것은 실례입니다.'
+  },
+  {
+    title: '업무 전화를 끊을 때 올바른 방법은?',
+    situation: '거래처와의 통화가 마무리되어 전화를 끊으려 합니다.',
+    options: [
+      '용건이 끝나는 즉시 바로 끊는다',
+      '전화를 건 사람(발신자)이 먼저 끊는 것이 원칙이다',
+      '항상 받은 사람이 먼저 끊어야 한다',
+      '"딸깍" 소리가 나도록 빠르게 끊는다'
+    ],
+    correct: 1,
+    explanation: '전화를 끊을 때는 전화를 건 사람(발신자)이 먼저 끊는 것이 원칙입니다. 단, 상급자가 있을 경우 상급자가 먼저 끊은 후 끊는 것이 예의입니다. 끊을 때 딸깍 소리를 내며 갑자기 끊는 것은 실례입니다.'
+  },
+  {
+    title: '업무 이메일 제목 작성, 어떻게 해야 할까요?',
+    situation: '팀장님께 프로젝트 현황 보고 이메일을 작성하려 합니다.',
+    options: [
+      '제목을 비워도 수신자가 본문을 보면 된다',
+      '"안녕하세요"처럼 인사말을 제목으로 쓴다',
+      '내용을 요약한 핵심을 담아 간결하게 작성한다',
+      '이모티콘을 활용해 친근감을 표현한다'
+    ],
+    correct: 2,
+    explanation: '업무 이메일 제목은 본문 내용을 요약한 핵심을 담아 작성하는 것이 좋습니다. 수신자가 제목만 보고도 내용을 파악할 수 있어야 합니다. 제목을 비우거나 인사말만 쓰는 것은 비즈니스 이메일 예절에 맞지 않습니다.'
+  }
+];
+
+// ===== STATE =====
+let userName = '', currentQ = 0, userAnswers = [];
+
+function initAnswers() { userAnswers = new Array(QUESTIONS.length).fill(null); }
+
+// ===== SCREENS =====
+function show(id) {
+  ['screen-name','screen-quiz','screen-result'].forEach(s => document.getElementById(s).style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  window.scrollTo(0, 0);
+}
+function showLoading(v) { document.getElementById('loading').classList.toggle('show', v); }
+
+function startQuiz() {
+  const n = document.getElementById('input-name').value.trim();
+  if (!n) { showToast('이름을 입력해 주세요 😊'); return; }
+  userName = n; initAnswers(); currentQ = 0;
+  show('screen-quiz'); renderQ();
+}
+
+function restart() {
+  userName = ''; currentQ = 0; initAnswers();
+  document.getElementById('input-name').value = '';
+  show('screen-name');
+}
+
+// ===== QUIZ =====
+function renderQ() {
+  const q = QUESTIONS[currentQ], total = QUESTIONS.length;
+  document.getElementById('progress-label').textContent = `문항 ${currentQ+1} / ${total}`;
+  document.getElementById('user-label-top').textContent = `👤 ${userName}`;
+  document.getElementById('progress-fill').style.width = `${((currentQ+1)/total)*100}%`;
+  document.getElementById('q-num').textContent = `Question ${String(currentQ+1).padStart(2,'0')}`;
+  document.getElementById('q-title').textContent = q.title;
+
+  const sitWrap = document.getElementById('q-situation-wrap');
+  if (q.situation) {
+    document.getElementById('q-situation').textContent = q.situation;
+    sitWrap.style.display = 'block';
+  } else { sitWrap.style.display = 'none'; }
+
+  const list = document.getElementById('options-list');
+  const keys = ['①', '②', '③', '④'];
+  list.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (userAnswers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-key">${keys[i]}</span><span class="option-text">${opt}</span>`;
+    btn.onclick = () => selectOption(i);
+    list.appendChild(btn);
+  });
+
+  document.getElementById('btn-prev').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').textContent = currentQ === total-1 ? '제출하기 ✓' : '다음 →';
+}
+
+function selectOption(i) {
+  userAnswers[currentQ] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+}
+
+function prevQ() { if (currentQ > 0) { currentQ--; renderQ(); } }
+function nextQ() {
+  if (userAnswers[currentQ] === null) { showToast('보기를 선택해 주세요 ✏️'); return; }
+  if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQ(); } else { submitQuiz(); }
+}
+
+// ===== SUBMIT =====
+function calcScore() {
+  return QUESTIONS.reduce((s, q, i) => s + (userAnswers[i] === q.correct ? 1 : 0), 0);
+}
+
+async function submitQuiz() {
+  showLoading(true);
+  try {
+    const score = calcScore();
+    const payload = { name: userName, score, total: QUESTIONS.length };
+    QUESTIONS.forEach((q, i) => {
+      payload[`q${i+1}_answer`] = q.options[userAnswers[i]] || '';
+      payload[`q${i+1}_correct`] = userAnswers[i] === q.correct;
+    });
+    await sbInsert(payload);
+  } catch(err) {
+    console.error('저장 오류:', err);
+    showToast('저장 중 오류가 발생했습니다. 결과는 확인하실 수 있습니다.');
+  } finally {
+    showLoading(false);
+    renderResult(); show('screen-result');
+  }
+}
+
+// ===== RESULT =====
+function renderResult() {
+  const score = calcScore(), total = QUESTIONS.length;
+  const emojis = ['😅','😅','🤔','🤔','🤔','👍','👍','👍','🏆','🏆','🏆'];
+  const titles = [
+    '더 공부해봐요!','더 공부해봐요!','조금 더 익혀봐요!','조금 더 익혀봐요!','절반은 알고 있어요!',
+    '제법 알고 있어요!','잘 알고 있어요!','꽤 수준급이에요!','거의 완벽해요!','매너 고수!','완벽한 매너인!'];
+  document.getElementById('result-emoji').textContent = emojis[score];
+  document.getElementById('result-title').textContent = titles[score];
+  document.getElementById('result-name-display').textContent = `👤 ${userName}`;
+  document.getElementById('score-num').textContent = score;
+
+  const list = document.getElementById('result-list');
+  list.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const isCorrect = userAnswers[i] === q.correct;
+    const card = document.createElement('div');
+    card.className = 'card result-item';
+    card.innerHTML = `
+      <div class="result-item-header">
+        <div class="result-item-title">Q${i+1}. ${q.title}</div>
+        <div class="result-badge ${isCorrect ? 'correct' : 'incorrect'}">${isCorrect ? '✓ 정답' : '✗ 오답'}</div>
+      </div>
+      <div class="answer-row">
+        <div class="answer-box user-ans">
+          <div class="answer-box-label">내 답변</div>
+          <div class="answer-box-text">${q.options[userAnswers[i]] || '(미선택)'}</div>
+        </div>
+        <div class="answer-box correct-ans">
+          <div class="answer-box-label">정답</div>
+          <div class="answer-box-text">${q.options[q.correct]}</div>
+        </div>
+      </div>
+      <div class="result-explain"><strong>💡 해설</strong><br>${q.explanation}</div>`;
+    list.appendChild(card);
+  });
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ===== INIT =====
+document.getElementById('input-name').addEventListener('keydown', e => { if (e.key === 'Enter') startQuiz(); });
+show('screen-name');
+</script>
+</body>
+</html>
