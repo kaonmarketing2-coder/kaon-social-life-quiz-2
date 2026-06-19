@@ -226,10 +226,10 @@
     </div>
     <div class="progress-bar-wrap">
       <div class="progress-info">
-        <span id="progress-label">문항 1 / 10</span>
+        <span id="progress-label">문항 1 / 11</span>
         <span id="user-label-top"></span>
       </div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:9%"></div></div>
     </div>
     <div class="card">
       <div class="quiz-q-num" id="q-num">Question 01</div>
@@ -258,7 +258,7 @@
       <div class="result-title" id="result-title"></div>
       <div class="score-display">
         <span class="score-num" id="score-num">0</span>
-        <span class="score-denom">/ 10</span>
+        <span class="score-denom">/ 11</span>
       </div>
     </div>
     <div class="result-list" id="result-list"></div>
@@ -387,16 +387,16 @@ const QUESTIONS = [
     explanation: '전화를 받을 때는 사명과 소속 부서, 자신의 이름을 순서대로 밝히는 것이 원칙입니다. 자신을 밝히지 않고 다짜고짜 용건부터 이야기하거나 상대방을 먼저 묻는 것은 실례입니다.'
   },
   {
-    title: '업무 전화를 끊을 때 올바른 방법은?',
-    situation: '거래처와의 통화가 마무리되어 전화를 끊으려 합니다.',
+    title: '압존법, 어떤 상황에서 쓰는 표현인가요?',
+    situation: '신입사원 A는 부장님께 팀장님 관련 사항을 보고하려 합니다. "팀장님이 확인하셨습니다"와 "팀장이 확인했습니다" 중 어느 표현이 맞을까요?',
     options: [
-      '용건이 끝나는 즉시 바로 끊는다',
-      '전화를 건 사람(발신자)이 먼저 끊는 것이 원칙이다',
-      '항상 받은 사람이 먼저 끊어야 한다',
-      '"딸깍" 소리가 나도록 빠르게 끊는다'
+      '"팀장님이 확인하셨습니다" — 상급자이므로 항상 높임말 사용',
+      '"팀장이 확인했습니다" — 더 높은 상급자(부장) 앞에서는 낮춰 말함',
+      '두 표현 모두 틀리며, "팀장님께서 확인하셨습니다"가 올바름',
+      '압존법은 가족 간에만 적용되며 직장에서는 해당 없음'
     ],
     correct: 1,
-    explanation: '전화를 끊을 때는 전화를 건 사람(발신자)이 먼저 끊는 것이 원칙입니다. 단, 상급자가 있을 경우 상급자가 먼저 끊은 후 끊는 것이 예의입니다. 끊을 때 딸깍 소리를 내며 갑자기 끊는 것은 실례입니다.'
+    explanation: '압존법(壓尊法)은 말하는 상대(부장)가 화제의 인물(팀장)보다 더 높을 때, 화제의 인물에 대한 높임 표현을 낮추는 언어 예절입니다. 즉 부장님 앞에서 팀장님을 "팀장님이 오셨습니다"가 아닌 "팀장이 왔습니다"로 표현합니다. 다만 현대 직장에서는 회사 문화에 따라 적용 방식이 다를 수 있으므로, 조직 분위기를 먼저 파악하는 것이 좋습니다.'
   },
   {
     title: '업무 이메일 제목 작성, 어떻게 해야 할까요?',
@@ -409,6 +409,18 @@ const QUESTIONS = [
     ],
     correct: 2,
     explanation: '업무 이메일 제목은 본문 내용을 요약한 핵심을 담아 작성하는 것이 좋습니다. 수신자가 제목만 보고도 내용을 파악할 수 있어야 합니다. 제목을 비우거나 인사말만 쓰는 것은 비즈니스 이메일 예절에 맞지 않습니다.'
+  },
+  {
+    title: '이메일 회신 시 수신인/참조인 관리, 어떻게 해야 할까요?',
+    situation: 'A, B, C가 수신인(To)으로 지정된 이메일을 받았습니다. A가 이 메일에 회신하려 하는데, 회신 내용은 발신자와 A만 알면 되는 내용입니다.',
+    options: [
+      '원래 수신인/참조인을 그대로 두고 전체 회신(Reply All)한다',
+      '회신 전 수신인(To)·참조인(CC)을 확인하고, 불필요한 B·C를 삭제한 후 보낸다',
+      '수신인(To)에서 B·C를 지우고 참조인(CC)으로 옮긴다',
+      '수신인 목록은 발신자가 설정한 것이므로 수정하지 않는다'
+    ],
+    correct: 1,
+    explanation: '회신 전에는 반드시 수신인(To)과 참조인(CC) 목록을 확인해야 합니다. 내 회신 내용과 무관한 B·C는 삭제하고 필요한 사람에게만 보내는 것이 올바른 이메일 매너입니다. 전체 회신(Reply All)은 모든 수신인이 내용을 공유해야 할 때만 사용합니다. 발송 전 수신인 목록을 체크하지 않아 엉뚱한 사람에게 메일이 가는 실수는 직장 내 빈번한 실례 중 하나입니다.'
   }
 ];
 
@@ -508,10 +520,10 @@ async function submitQuiz() {
 // ===== RESULT =====
 function renderResult() {
   const score = calcScore(), total = QUESTIONS.length;
-  const emojis = ['😅','😅','🤔','🤔','🤔','👍','👍','👍','🏆','🏆','🏆'];
+  const emojis = ['😅','😅','🤔','🤔','🤔','👍','👍','👍','🏆','🏆','🏆','🏆'];
   const titles = [
     '더 공부해봐요!','더 공부해봐요!','조금 더 익혀봐요!','조금 더 익혀봐요!','절반은 알고 있어요!',
-    '제법 알고 있어요!','잘 알고 있어요!','꽤 수준급이에요!','거의 완벽해요!','매너 고수!','완벽한 매너인!'];
+    '제법 알고 있어요!','잘 알고 있어요!','꽤 수준급이에요!','거의 완벽해요!','매너 고수!','완벽한 매너인!','완벽한 매너인!'];
   document.getElementById('result-emoji').textContent = emojis[score];
   document.getElementById('result-title').textContent = titles[score];
   document.getElementById('result-name-display').textContent = `👤 ${userName}`;
